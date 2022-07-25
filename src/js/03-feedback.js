@@ -51,6 +51,7 @@ function onFormSubmit(event) {
   event.preventDefault();
   // localData.email = emailAreaEl.value;
   // localData.message = messageAreaEl.value;
+  console.log(localData);
   event.currentTarget.reset();
   localStorage.removeItem(STORAGE_KEY);
 }
