@@ -27,9 +27,13 @@ import throttle from 'lodash.throttle';
 // function onSavedMessage() {
 //   const state = localStorage.getItem('feedback-form-state');
 //   const JSONState = JSON.parse(state);
-//   formEl['email'].value = JSONState ? JSONState.email ?? '' : '';
-//   formEl['message'].value = JSONState ? JSONState.message ?? '' : '';
+//   if (JSONState) {
+//     formEl['email'].value = JSONState.email ?? '';
+//     formEl['message'].value = JSONState.message ?? '';
+//   }
 // }
+
+/////////////////////////////////////////////////
 
 const formEl = document.querySelector('.feedback-form');
 const emailAreaEl = document.querySelector('.feedback-form input');
@@ -39,34 +43,28 @@ formEl.addEventListener('submit', onFormSubmit);
 formEl.addEventListener('input', throttle(onFormInput, 500));
 
 const STORAGE_KEY = 'feedback-form-state';
+const localData = {};
 
 onFormFulfill();
 
-const localData = {};
-
-function onFormInput(event) {
-  localData[event.target.name] = event.target.value;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
-}
-
 function onFormSubmit(event) {
   event.preventDefault();
-  localData.email = emailAreaEl.value;
-  localData.message = messageAreaEl.value;
-  console.log(localData);
+  // localData.email = emailAreaEl.value;
+  // localData.message = messageAreaEl.value;
   event.currentTarget.reset();
   localStorage.removeItem(STORAGE_KEY);
 }
-
+function onFormInput(event) {
+  localData[event.target.name] = event.target.value;
+  localData.email = emailAreaEl.value;
+  localData.message = messageAreaEl.value;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
+}
 function onFormFulfill() {
   const inputWalue = localStorage.getItem(STORAGE_KEY);
   const parsedWalue = JSON.parse(inputWalue);
-  console.log(parsedWalue);
   if (parsedWalue) {
-    const emailData = parsedWalue.email;
-    emailAreaEl.value = emailData;
-
-    const messageData = parsedWalue.message;
-    messageAreaEl.value = messageData;
+    emailAreaEl.value = parsedWalue.email ?? '';
+    messageAreaEl.value = parsedWalue.message ?? '';
   }
 }
