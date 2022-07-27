@@ -5,6 +5,7 @@ import throttle from 'lodash.throttle';
 // formEl.addEventListener('input', onFormInput);
 // formEl.addEventListener('submit', throttle(onFormSubmit, 500));
 // window.addEventListener('load', onSavedMessage);
+
 // function onFormInput(event) {
 //   const state = localStorage.getItem('feedback-form-state');
 
@@ -19,7 +20,7 @@ import throttle from 'lodash.throttle';
 
 // function onFormSubmit(event) {
 //   event.preventDefault();
-
+//   console.log(state);
 //   localStorage.removeItem('feedback-form-state');
 //   event.currentTarget.reset();
 // }
@@ -47,25 +48,35 @@ const localData = {};
 
 onFormFulfill();
 
+function onFormFulfill() {
+  const formValue = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if (formValue === null) {
+    return;
+  }
+  setFormValueOnLoad(formValue);
+}
+
+function setFormValueOnLoad({ email, message }) {
+  formEl.elements.email.value = email;
+  formEl.elements.message.value = message;
+}
+
+function onFormInput() {
+  const formValue = getFormValue();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(formValue));
+}
+
+function getFormValue() {
+  const email = formEl.elements.email.value;
+  const message = formEl.elements.message.value;
+  return { email, message };
+}
+
 function onFormSubmit(event) {
   event.preventDefault();
-  // localData.email = emailAreaEl.value;
-  // localData.message = messageAreaEl.value;
-  console.log(localData);
+  const formValue = getFormValue();
+  console.log(formValue);
+
   event.currentTarget.reset();
   localStorage.removeItem(STORAGE_KEY);
-}
-function onFormInput(event) {
-  localData[event.target.name] = event.target.value;
-  localData.email = emailAreaEl.value;
-  localData.message = messageAreaEl.value;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
-}
-function onFormFulfill() {
-  const inputWalue = localStorage.getItem(STORAGE_KEY);
-  const parsedWalue = JSON.parse(inputWalue);
-  if (parsedWalue) {
-    emailAreaEl.value = parsedWalue.email ?? '';
-    messageAreaEl.value = parsedWalue.message ?? '';
-  }
 }
